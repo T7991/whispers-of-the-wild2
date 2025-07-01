@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Whispers of the Wild</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(270deg, #003300, #001a00);
+      background-size: 400% 400%;
+      animation: animateBG 20s ease infinite;
+      color: #fff;
+      text-align: center;
+    }
+    @keyframes animateBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+    .menu, .character-screen, .game-screen, .settings-screen, .puzzle-screen {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.5);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 15px #00ffaa;
+      width: 90%;
+      max-width: 400px;
+      opacity: 0;
+      transition: opacity 0.6s ease-in-out;
+      z-index: 10;
+    }
+    .active {
+      display: block;
+      opacity: 1;
+    }
+    h1, h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      margin: 10px auto;
+      padding: 15px;
+      font-size: 1rem;
+      color: #fff;
+      background: #228B22;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background: #2ecc71;
+    }
+    .character-options {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+    }
+    .character-options div {
+      background: #444;
+      padding: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    audio {
+      display: none;
+    }
+    .map-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .map-cell {
+      height: 60px;
+      background: #2d2d2d;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      font-size: 1.5rem;
+      transition: transform 0.3s ease-in-out;
+      position: relative;
+    }
+    .map-cell:hover {
+      transform: scale(1.05);
+    }
+    .player {
+      color: #00ffaa;
+      animation: pulse 1s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+    }
+    .inventory {
+      margin-top: 20px;
+      font-size: 0.9rem;
+      color: #ccffcc;
+    }
+    .dialogue-popup {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.8);
+      color: #0f0;
+      padding: 15px 25px;
+      border-radius: 15px;
+      font-size: 1rem;
+      max-width: 90%;
+      display: none;
+      z-index: 20;
+      box-shadow: 0 0 10px #0f0;
+    }
+  </style>
+</head>
+<body>
+  <audio autoplay loop>
+    <source src="https://www.bensound.com/bensound-music/bensound-slowmotion.mp3" type="audio/mp3" />
+  </audio>
+
+  <!-- Main Menu -->
+  <div class="menu active" id="mainMenu">
+    <h1>Whispers of the Wild</h1>
+    <button class="btn" onclick="showScreen('gameScreen')">Start Adventure</button>
+    <button class="btn" onclick="alert('Continue functionality coming soon')">Continue Journey</button>
+    <button class="btn" onclick="showScreen('characterScreen')">Customize Character</button>
+    <button class="btn" onclick="showScreen('settingsScreen')">Settings</button>
+  </div>
+
+  <!-- Character Customization Screen -->
+  <div class="character-screen" id="characterScreen">
+    <h2>Choose a Companion</h2>
+    <div class="character-options">
+      <div onclick="selectCompanion('Fox')">🦊 Fox</div>
+      <div onclick="selectCompanion('Owl')">🦉 Owl</div>
+      <div onclick="selectCompanion('Turtle')">🐢 Turtle</div>
+    </div>
+    <button class="btn" onclick="showScreen('mainMenu')">Back</button>
+  </div>
+
+  <!-- Game Screen -->
+  <div class="game-screen" id="gameScreen">
+    <h2>Welcome to the Whispering Forest 🌲</h2>
+    <p>Use arrow keys to move:</p>
+    <div class="map-grid" id="mapGrid"></div>
+    <div class="inventory" id="inventory">Inventory: None</div>
+    <button class="btn" onclick="showScreen('puzzleScreen')">Try a Puzzle</button>
+    <button class="btn" onclick="showScreen('mainMenu')">Return to Menu</button>
+  </div>
+
+  <!-- Puzzle Screen -->
+  <div class="puzzle-screen" id="puzzleScreen">
+    <h2>Forest Puzzle 🌿</h2>
+    <p>Solve this: What glows in the forest and helps you find the path?</p>
+    <button class="btn" onclick="checkAnswer('fireflies')">Fireflies</button>
+    <button class="btn" onclick="checkAnswer('stones')">Stones</button>
+    <button class="btn" onclick="checkAnswer('wind')">Wind</button>
+    <button class="btn" onclick="showScreen('gameScreen')">Back to Game</button>
+  </div>
+
+  <!-- Settings Screen -->
+  <div class="settings-screen" id="settingsScreen">
+    <h2>Settings</h2>
+    <button class="btn" onclick="alert('Music Volume control coming soon')">🎵 Music Volume</button>
+    <button class="btn" onclick="alert('Sound Effects control coming soon')">🔊 Sound Effects</button>
+    <button class="btn" onclick="alert('Graphics Settings coming soon')">✳️ Graphics</button>
+    <button class="btn" onclick="showScreen('mainMenu')">Back</button>
+  </div>
+
+  <!-- Dialogue Popup -->
+  <div class="dialogue-popup" id="dialoguePopup"></div>
+
+  <script>
+    const screens = ['mainMenu', 'characterScreen', 'gameScreen', 'settingsScreen', 'puzzleScreen'];
+    let playerPosition = 4;
+    let progress = 0;
+    let inventory = [];
+    let companion = null;
+
+    // Items: position on grid and icon + name
+    const items = {
+      1: { icon: '🌿', name: 'Mystic Herb' },
+      5: { icon: '🪨', name: 'Ancient Stone' },
+    };
+
+    // NPC character position and icon + dialogue
+    const npc = {
+      position: 7,
+      icon: '🦉',
+      dialogues: [
+        "Hello traveler! Collect the Mystic Herb and Ancient Stone to unlock the forest secrets.",
+        "Beware the dark woods, but fear not with your companion by your side!",
+      ],
+      dialogueIndex: 0
+    };
+
+    function showScreen(screenId) {
+      screens.forEach(id => {
+        const screen = document.getElementById(id);
+        screen.classList.remove('active');
+        setTimeout(() => (screen.style.display = 'none'), 500);
+      });
+      const target = document.getElementById(screenId);
+      target.style.display = 'block';
+      setTimeout(() => target.classList.add('active'), 50);
+    }
+
+    function selectCompanion(animal) {
+      companion = animal;
+      alert(animal + " selected as your companion!");
+      showScreen('mainMenu');
+    }
+
+    function checkAnswer(answer) {
+      if (answer === 'fireflies') {
+        if (!inventory.includes('Firefly Torch')) {
+          alert('Correct! You earned a Firefly Torch and unlocked a hidden path!');
+          inventory.push('Firefly Torch');
+          progress++;
+          updateInventory();
+          document.getElementById('mapGrid').style.border = '2px solid gold';
+        } else {
+          alert('You already solved this puzzle!');
+        }
+      } else {
+        alert('Try again!');
+      }
+    }
+
+    function updateInventory() {
+      const invText = inventory.length ? inventory.join(', ') : 'None';
+      document.getElementById('inventory').textContent = 'Inventory: ' + invText;
+    }
+
+    function generateMap() {
+      const mapGrid = document.getElementById('mapGrid');
+      mapGrid.innerHTML = '';
+      for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('map-cell');
+
+        if (i === playerPosition) {
+          cell.textContent = '🧍';
+          cell.classList.add('player');
+        } else if (i === npc.position) {
+          cell.textContent = npc.icon;
+          cell.classList.add('npc');
+        } else if (items[i]) {
+          // If item collected, show empty tree else show item icon
+          cell.textContent = inventory.includes(items[i].name) ? '🌲' : items[i].icon;
+          cell.title = items[i].name;
+        } else if (i === 8 && inventory.includes('Firefly Torch')) {
+          cell.textContent = '✨';
+        } else {
+          cell.textContent = '🌲';
+        }
+
+        mapGrid.appendChild(cell);
+      }
+    }
+
+    // Show dialogue near NPC if player next to it
+    function checkNPCDialogue() {
+      const npcPos = npc.position;
+      const playerRow = Math.floor(playerPosition / 3);
+      const playerCol = playerPosition % 3;
+      const npcRow = Math.floor(npcPos / 3);
+      const npcCol = npcPos % 3;
+
+      const distance = Math.abs(playerRow - npcRow) + Math.abs(playerCol - npcCol);
+
+      const dialoguePopup = document.getElementById('dialoguePopup');
+
+      if (distance === 1) {
+        dialoguePopup.style.display = 'block';
+        dialoguePopup.textContent = npc.dialogues[npc.dialogueIndex];
+        npc.dialogueIndex = (npc.dialogueIndex + 1) % npc.dialogues.length;
+      } else {
+        dialoguePopup.style.display = 'none';
+      }
+    }
+
+    function movePlayer(direction) {
+      const row = Math.floor(playerPosition / 3);
+      const col = playerPosition % 3;
+      let newPosition = playerPosition;
+
+      if (direction === 'up' && row > 0) newPosition -= 3;
+      if (direction === 'down' && row < 2) newPosition += 3;
+      if (direction === 'left' && col > 0) newPosition -= 1;
+      if (direction === 'right' && col < 2) newPosition += 1;
+
+      // If player moves onto an item, collect it
+      if (items[newPosition] && !inventory.includes(items[newPosition].name)) {
+        alert(`You found a ${items[newPosition].name}! Added to inventory.`);
+        inventory.push(items[newPosition].name);
+        updateInventory();
+      }
+
+      playerPosition = newPosition;
+      generateMap();
+      checkNPCDialogue();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (document.getElementById('gameScreen').classList.contains('active')) {
+        if (e.key === 'ArrowUp') movePlayer('up');
+        if (e.key === 'ArrowDown') movePlayer('down');
+        if (e.key === 'ArrowLeft') movePlayer('left');
+        if (e.key === 'ArrowRight') movePlayer('right');
+      }
+    });
+
+    window.onload = () => {
+      generateMap();
+      updateInventory();
+    };
+  </script>
+</body>
+</html>
