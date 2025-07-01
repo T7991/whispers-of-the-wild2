@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Whispers of the Wild</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: url('https://i.imgur.com/MmXh3vA.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      text-align: center;
+    }
+    .menu, .character-screen, .game-screen, .settings-screen, .puzzle-screen {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(0, 0, 0, 0.5);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 15px #00ffaa;
+      width: 90%;
+      max-width: 400px;
+      opacity: 0;
+      transition: opacity 0.6s ease-in-out;
+    }
+    .active {
+      display: block;
+      opacity: 1;
+    }
+    h1, h2 {
+      font-size: 2rem;
+      margin-bottom: 20px;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      margin: 10px auto;
+      padding: 15px;
+      font-size: 1rem;
+      color: #fff;
+      background: #228B22;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .btn:hover {
+      background: #2ecc71;
+    }
+    .character-options {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 20px;
+    }
+    .character-options div {
+      background: #444;
+      padding: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    audio {
+      display: none;
+    }
+    .map-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .map-cell {
+      height: 60px;
+      background: #2d2d2d;
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+    .player {
+      color: #00ffaa;
+    }
+  </style>
+</head>
+<body>
+  <audio autoplay loop>
+    <source src="https://www.bensound.com/bensound-music/bensound-slowmotion.mp3" type="audio/mp3" />
+  </audio>
+
+  <!-- Main Menu -->
+  <div class="menu active" id="mainMenu">
+    <h1>Whispers of the Wild</h1>
+    <button class="btn" onclick="showScreen('gameScreen')">Start Adventure</button>
+    <button class="btn" onclick="alert('Continue functionality coming soon')">Continue Journey</button>
+    <button class="btn" onclick="showScreen('characterScreen')">Customize Character</button>
+    <button class="btn" onclick="showScreen('settingsScreen')">Settings</button>
+  </div>
+
+  <!-- Character Customization Screen -->
+  <div class="character-screen" id="characterScreen">
+    <h2>Choose a Companion</h2>
+    <div class="character-options">
+      <div onclick="selectCompanion('Fox')">🦊 Fox</div>
+      <div onclick="selectCompanion('Owl')">🦉 Owl</div>
+      <div onclick="selectCompanion('Turtle')">🐢 Turtle</div>
+    </div>
+    <button class="btn" onclick="showScreen('mainMenu')">Back</button>
+  </div>
+
+  <!-- Game Screen -->
+  <div class="game-screen" id="gameScreen">
+    <h2>Welcome to the Whispering Forest 🌲</h2>
+    <p>Use arrow keys to move:</p>
+    <div class="map-grid" id="mapGrid"></div>
+    <button class="btn" onclick="showScreen('puzzleScreen')">Try a Puzzle</button>
+    <button class="btn" onclick="showScreen('mainMenu')">Return to Menu</button>
+  </div>
+
+  <!-- Puzzle Screen -->
+  <div class="puzzle-screen" id="puzzleScreen">
+    <h2>Forest Puzzle 🌿</h2>
+    <p>Solve this: What glows in the forest and helps you find the path?</p>
+    <button class="btn" onclick="checkAnswer('fireflies')">Fireflies</button>
+    <button class="btn" onclick="checkAnswer('stones')">Stones</button>
+    <button class="btn" onclick="checkAnswer('wind')">Wind</button>
+    <button class="btn" onclick="showScreen('gameScreen')">Back to Game</button>
+  </div>
+
+  <!-- Settings Screen -->
+  <div class="settings-screen" id="settingsScreen">
+    <h2>Settings</h2>
+    <button class="btn" onclick="alert('Music Volume control coming soon')">🎵 Music Volume</button>
+    <button class="btn" onclick="alert('Sound Effects control coming soon')">🔊 Sound Effects</button>
+    <button class="btn" onclick="alert('Graphics Settings coming soon')">✳️ Graphics</button>
+    <button class="btn" onclick="showScreen('mainMenu')">Back</button>
+  </div>
+
+  <script>
+    const screens = ['mainMenu', 'characterScreen', 'gameScreen', 'settingsScreen', 'puzzleScreen'];
+    let playerPosition = 4;
+
+    function showScreen(screenId) {
+      screens.forEach(id => {
+        const screen = document.getElementById(id);
+        screen.classList.remove('active');
+        setTimeout(() => (screen.style.display = 'none'), 500);
+      });
+      const target = document.getElementById(screenId);
+      target.style.display = 'block';
+      setTimeout(() => target.classList.add('active'), 50);
+    }
+
+    function selectCompanion(animal) {
+      alert(animal + " selected as your companion!");
+      showScreen('mainMenu');
+    }
+
+    function checkAnswer(answer) {
+      if (answer === 'fireflies') {
+        alert('Correct! The fireflies light the way. +1 Story Progress!');
+      } else {
+        alert('Try again!');
+      }
+    }
+
+    function generateMap() {
+      const mapGrid = document.getElementById('mapGrid');
+      mapGrid.innerHTML = '';
+      for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.classList.add('map-cell');
+        if (i === playerPosition) {
+          cell.textContent = '🧍';
+          cell.classList.add('player');
+        } else {
+          cell.textContent = '🌲';
+        }
+        mapGrid.appendChild(cell);
+      }
+    }
+
+    function movePlayer(direction) {
+      const row = Math.floor(playerPosition / 3);
+      const col = playerPosition % 3;
+      if (direction === 'up' && row > 0) playerPosition -= 3;
+      if (direction === 'down' && row < 2) playerPosition += 3;
+      if (direction === 'left' && col > 0) playerPosition -= 1;
+      if (direction === 'right' && col < 2) playerPosition += 1;
+      generateMap();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (document.getElementById('gameScreen').classList.contains('active')) {
+        if (e.key === 'ArrowUp') movePlayer('up');
+        if (e.key === 'ArrowDown') movePlayer('down');
+        if (e.key === 'ArrowLeft') movePlayer('left');
+        if (e.key === 'ArrowRight') movePlayer('right');
+      }
+    });
+
+    window.onload = generateMap;
+  </script>
+</body>
+</html>
